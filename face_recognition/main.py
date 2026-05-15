@@ -34,16 +34,20 @@ def main():
         }
         print(f"      α={alpha} → {pca.n_components_} components")
 
-    for i, alpha in enumerate(ALPHA_VALUES):
-        Visualizer.plot_eigenfaces(
-            pca_results[alpha]["pca"],
-            n_faces = pca_results[alpha]["pca"].n_components_,
-            alpha_value = alpha
-        )
-        Visualizer.plot_variance_explained(
-            pca_results[alpha]["pca"],
-            alpha_value=alpha
-        )
+    ## For visualize prposes only, they take time to render image, so no need to run it every time.
+    # for i, alpha in enumerate(ALPHA_VALUES):
+    #     Visualizer.plot_eigenfaces(
+    #         pca_results[alpha]["pca"],
+    #         n_faces = pca_results[alpha]["pca"].n_components_,
+    #         alpha_value = alpha
+    #     )
+    #     Visualizer.plot_variance_explained(
+    #         pca_results[alpha]["pca"],
+    #         alpha_value=alpha
+    #     )
+    #     Visualizer.plot_transformed_faces(
+    #         faces = pca_results[alpha]["pca"].inverse_transform(pca_results[alpha]["X_train_pca"]),
+    #     alpha_value= alpha)
 
 if __name__ == "__main__":
     main()

@@ -42,3 +42,18 @@ class Visualizer:
         plt.tight_layout()
         plt.savefig(os.path.join(OUTPUT_DIR, f"pca_variance_explained_{alpha_value}.png"), dpi=120)
         plt.close()
+
+    @staticmethod
+    def plot_transformed_faces(faces, alpha_value: int = 0) -> None:
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        n_faces = len(faces)
+        fig, axes = plt.subplots(1, n_faces, figsize=(2 * n_faces, 2.5))
+        for i, ax in enumerate(axes):
+            face = faces[i].reshape(IMAGE_HEIGHT, IMAGE_WIDTH)
+            ax.imshow(face, cmap="gray")
+            ax.set_title(f"PC {i + 1}", fontsize=8)
+            ax.axis("off")
+        fig.suptitle("Transformed faces")
+        plt.tight_layout()
+        plt.savefig(os.path.join(OUTPUT_DIR, f"transformed_faces_{alpha_value}.png"), dpi=120)
+        plt.close()
