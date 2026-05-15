@@ -1,19 +1,3 @@
-"""
-data/dataset_loader.py
-
-Loads the ORL (AT&T) face dataset, flattens every 92×112 grayscale image
-into a vector of 10 304 values, stacks all 400 vectors into a single
-Data Matrix D of shape (400, 10304), and builds the label vector y whose
-values are integers 1‥40 corresponding to the subject id.
-
-Expected directory layout (set DATASET_ROOT in utils/config.py):
-    att_faces/
-        s1/  1.pgm … 10.pgm
-        s2/  1.pgm … 10.pgm
-        …
-        s40/ 1.pgm … 10.pgm
-"""
-
 import os
 import numpy as np
 from PIL import Image
@@ -52,7 +36,7 @@ def load_orl_dataset() -> tuple[list[np.ndarray], list[int]]:
 
         for img_idx in range(1, N_IMAGES_PER_SUB + 1):
             img_path = os.path.join(subject_dir, f"{img_idx}.pgm")
-            img      = Image.open(img_path).convert("L")   # grayscale
+            img      = Image.open(img_path).convert("L")
             arr      = np.array(img, dtype=np.uint8)
 
             # Sanity-check dimensions
@@ -81,12 +65,6 @@ def generate_data_matrix(
 
         y : np.ndarray, shape (400,), dtype int32
             Integer subject labels 1..40.
-
-    Steps
-    -----
-    1. Flatten every (112, 92) image to a 1-D vector of length 10 304.
-    2. Stack the 400 vectors row-wise → D  (400 × 10 304).
-    3. Cast the labels list → y            (400,).
     """
     n_samples = len(images)
 
@@ -94,9 +72,9 @@ def generate_data_matrix(
     D = np.empty((n_samples, IMAGE_VECTOR_SIZE), dtype=np.float64)
 
     for i, img_arr in enumerate(images):
-        D[i] = img_arr.flatten()          # (112, 92) → (10304,)
+        D[i] = img_arr.flatten()
 
-    y = np.array(labels, dtype=np.int32)  # (400,)
+    y = np.array(labels, dtype=np.int32)
 
     assert D.shape == (n_samples, IMAGE_VECTOR_SIZE), \
         f"Data matrix shape mismatch: got {D.shape}"

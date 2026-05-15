@@ -1,8 +1,3 @@
-"""
-utils/config.py
-Global configuration constants for the Face Recognition pipeline.
-"""
-
 import os
 
 # ── Paths ─────────────────────────────────────────────────────────────────────

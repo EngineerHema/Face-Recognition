@@ -1,17 +1,3 @@
-"""
-data/data_splitter.py
-
-Splits the Data Matrix D (400 × 10304) and label vector y into
-training and test sets following the assignment rule:
-
-    • Odd  rows (1-indexed) → training   (200 samples, 5 per subject)
-    • Even rows (1-indexed) → test       (200 samples, 5 per subject)
-
-Because Python uses 0-based indexing, "odd rows (1-indexed)" correspond
-to indices 0, 2, 4, … (even Python indices), and "even rows (1-indexed)"
-correspond to indices 1, 3, 5, … (odd Python indices).
-"""
-
 import numpy as np
 
 
@@ -34,10 +20,8 @@ def split_train_test(
     y_train : np.ndarray, shape (200,)
     y_test  : np.ndarray, shape (200,)
     """
-    # 1-indexed odd  → 0-indexed even  → [0, 2, 4, …, 398]
-    train_idx = np.arange(0, len(D), 2)   # rows 1,3,5,…  (1-indexed)
-    # 1-indexed even → 0-indexed odd   → [1, 3, 5, …, 399]
-    test_idx  = np.arange(1, len(D), 2)   # rows 2,4,6,…  (1-indexed)
+    train_idx = np.arange(0, len(D), 2)
+    test_idx  = np.arange(1, len(D), 2)
 
     X_train, y_train = D[train_idx], y[train_idx]
     X_test,  y_test  = D[test_idx],  y[test_idx]

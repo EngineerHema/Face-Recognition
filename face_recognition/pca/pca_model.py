@@ -1,15 +1,3 @@
-"""
-pca/pca_model.py
-
-From-scratch PCA implementation that:
-    1. Mean-centres the training data.
-    2. Computes the covariance matrix (using the compact trick for high-dim data).
-    3. Finds eigenvalues / eigenvectors via np.linalg.eigh.
-    4. Selects the minimum number of components that retain ≥ α of total variance.
-    5. Caches eigenvalues to disk (as suggested in the assignment hint).
-    6. Projects new data into the reduced subspace.
-"""
-
 import os
 import numpy as np
 
@@ -30,14 +18,12 @@ class PCAModel:
         self.variance_threshold = variance_threshold
         self.random_seed        = random_seed
 
-        # Set after fit()
-        self.mean_         : np.ndarray | None = None   # (n_features,)
-        self.components_   : np.ndarray | None = None   # (n_components, n_features)
-        self.eigenvalues_  : np.ndarray | None = None   # (n_components,)
+        self.mean_         : np.ndarray | None = None
+        self.components_   : np.ndarray | None = None
+        self.eigenvalues_  : np.ndarray | None = None
         self.explained_var_ratio_: np.ndarray | None = None
         self.n_components_ : int | None = None
 
-    # ── fit ──────────────────────────────────────────────────────────
 
     def fit(self, X: np.ndarray) -> "PCAModel":
         """
@@ -54,39 +40,34 @@ class PCAModel:
         np.random.seed(self.random_seed)
 
         n_samples, n_features = X.shape
-        self.mean_ = X.mean(axis=0)                          # (n_features,)
-        X_c = X - self.mean_                                 # centred
+        self.mean_ = X.mean(axis=0)
+        X_c = X - self.mean_
 
-        # ── Eigendecomposition ────────────────────────────────────────
         if os.path.isfile(PCA_CACHE):
             # Load cached eigenvalues; recompute eigenvectors
             all_eigenvalues = np.load(PCA_CACHE)
             L = (X_c @ X_c.T) / (n_samples - 1)
             _, V_small = np.linalg.eigh(L)
         else:
-            L = (X_c @ X_c.T) / (n_samples - 1)             # (n_samples, n_samples)
+            L = (X_c @ X_c.T) / (n_samples - 1)
             all_eigenvalues, V_small = np.linalg.eigh(L)     # ascending order
             np.save(PCA_CACHE, all_eigenvalues)
 
-        # eigh returns ascending → reverse to descending
         idx            = np.argsort(all_eigenvalues)[::-1]
         all_eigenvalues = all_eigenvalues[idx]
         V_small         = V_small[:, idx]
 
-        # ── Select components that retain ≥ α variance ────────────────
         total_var      = all_eigenvalues.sum()
         cumulative_var = np.cumsum(all_eigenvalues) / total_var
         self.n_components_ = int(np.searchsorted(cumulative_var, self.variance_threshold) + 1)
 
-        # Map small eigenvectors back to original feature space
-        # u_i = X_c.T @ v_i  (then normalise)
-        V_reduced     = V_small[:, : self.n_components_]      # (n_samples, k)
-        U             = X_c.T @ V_reduced                     # (n_features, k)
+        V_reduced     = V_small[:, : self.n_components_]
+        U             = X_c.T @ V_reduced
         norms         = np.linalg.norm(U, axis=0, keepdims=True)
         norms[norms == 0] = 1.0
-        U            /= norms                                  # unit vectors
+        U            /= norms
 
-        self.components_          = U.T                        # (k, n_features)
+        self.components_          = U.T
         self.eigenvalues_         = all_eigenvalues[: self.n_components_]
         self.explained_var_ratio_ = self.eigenvalues_ / total_var
 
