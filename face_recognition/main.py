@@ -45,11 +45,9 @@ def main():
     X_test_auto = autoencoder.transform(X_test)
     reconstructed_image = autoencoder.inverse_transform(X_train_auto)
 
-    Visualizer.plot_ae_reconstructions(X_train, reconstructed_image, n_faces=8)
-
-
 
     ## For visualize purposes only, they take time to render image, so no need to run it every time.
+    # Visualizer.plot_ae_reconstructions(X_train, reconstructed_image, n_faces=8)
     # for i, alpha in enumerate(ALPHA_VALUES):
     #     Visualizer.plot_eigenfaces(
     #         pca_results[alpha]["pca"],
