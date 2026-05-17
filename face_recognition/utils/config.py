@@ -3,6 +3,7 @@ import os
 # ── Paths ─────────────────────────────────────────────────────────────────────
 DATASET_ROOT = os.path.join(os.path.dirname(__file__), "..", "att_faces")
 OUTPUT_DIR   = os.path.join(os.path.dirname(__file__), "..", "outputs")
+CHECKPOINT_DIR = os.path.join(os.path.dirname(__file__),"..","checkpoints")
 
 # ── Dataset constants ─────────────────────────────────────────────────────────
 N_SUBJECTS        = 40          # number of subjects
@@ -10,6 +11,14 @@ N_IMAGES_PER_SUB  = 10          # images per subject
 IMAGE_HEIGHT      = 112         # pixels
 IMAGE_WIDTH       = 92          # pixels
 IMAGE_VECTOR_SIZE = IMAGE_HEIGHT * IMAGE_WIDTH   # 10304
+
+AUTOENCODER_INPUT_SIZE = IMAGE_VECTOR_SIZE
+AUTOENCODER_LATENT_SIZE = 32
+EPOCHS = 300
+BATCH_SIZE = 32
+LEARNING_RATE = 1e-3
+
+CHECKPOINT_NAME = "autoencoder.pt"
 
 # ── PCA ───────────────────────────────────────────────────────────────────────
 ALPHA_VALUES = [0.80, 0.85, 0.90, 0.95]   # variance thresholds

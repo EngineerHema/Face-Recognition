@@ -2,14 +2,7 @@ import os
 import numpy as np
 from PIL import Image
 
-from utils.config import (
-    DATASET_ROOT,
-    N_SUBJECTS,
-    N_IMAGES_PER_SUB,
-    IMAGE_HEIGHT,
-    IMAGE_WIDTH,
-    IMAGE_VECTOR_SIZE,
-)
+from utils.config import *
 
 
 # ── Public API ────────────────────────────────────────────────────────────────

@@ -57,3 +57,48 @@ class Visualizer:
         plt.tight_layout()
         plt.savefig(os.path.join(OUTPUT_DIR, f"transformed_faces_{alpha_value}.png"), dpi=120)
         plt.close()
+
+    # ── Autoencoder ───────────────────────────────────────────────────
+
+    @staticmethod
+    def plot_ae_reconstructions(
+        X_original: np.ndarray,
+        X_reconstructed: np.ndarray,
+        n_faces: int = 8,
+    ) -> None:
+        """
+        Show original faces (top row) vs autoencoder reconstructions (bottom row).
+
+        Parameters
+        ----------
+        X_original      : (n_samples, 10304)  raw pixel values
+        X_reconstructed : (n_samples, 10304)  decoded pixel values
+        n_faces         : how many samples to display
+        """
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        np.random.seed(42)
+        indices = np.random.choice(len(X_original), size=n_faces, replace=False)
+
+        fig, axes = plt.subplots(2, n_faces, figsize=(2 * n_faces, 5))
+        for col, idx in enumerate(indices):
+            # original
+            axes[0, col].imshow(
+                X_original[idx].reshape(IMAGE_HEIGHT, IMAGE_WIDTH), cmap="gray"
+            )
+            axes[0, col].set_title(f"#{idx}", fontsize=8)
+            axes[0, col].axis("off")
+
+            # reconstruction
+            axes[1, col].imshow(
+                np.clip(X_reconstructed[idx], 0, 255).reshape(IMAGE_HEIGHT, IMAGE_WIDTH),
+                cmap="gray",
+            )
+            axes[1, col].axis("off")
+
+        axes[0, 0].set_ylabel("Original",      fontsize=9)
+        axes[1, 0].set_ylabel("Reconstructed", fontsize=9)
+        fig.suptitle("Autoencoder — original vs reconstruction")
+        plt.tight_layout()
+        plt.savefig(os.path.join(OUTPUT_DIR, "ae_reconstructions.png"), dpi=120)
+        plt.close()
+        print("Saved ae_reconstructions.png")
