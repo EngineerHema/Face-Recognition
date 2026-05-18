@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -33,14 +34,21 @@ class Visualizer:
         cumvar = np.cumsum(pca_model.explained_var_ratio_)
         plt.figure(figsize=(7, 4))
         plt.plot(cumvar, linewidth=2)
-        plt.axhline(pca_model.variance_threshold, color="red", linestyle="--",
-                    label=f"α = {pca_model.variance_threshold}")
+        plt.axhline(
+            pca_model.variance_threshold,
+            color="red",
+            linestyle="--",
+            label=f"α = {pca_model.variance_threshold}",
+        )
         plt.xlabel("Number of components")
         plt.ylabel("Cumulative variance explained")
         plt.title("PCA – Cumulative Explained Variance")
         plt.legend()
         plt.tight_layout()
-        plt.savefig(os.path.join(OUTPUT_DIR, f"pca_variance_explained_{alpha_value}.png"), dpi=120)
+        plt.savefig(
+            os.path.join(OUTPUT_DIR, f"pca_variance_explained_{alpha_value}.png"),
+            dpi=120,
+        )
         plt.close()
 
     @staticmethod
@@ -55,7 +63,9 @@ class Visualizer:
             ax.axis("off")
         fig.suptitle("Transformed faces")
         plt.tight_layout()
-        plt.savefig(os.path.join(OUTPUT_DIR, f"transformed_faces_{alpha_value}.png"), dpi=120)
+        plt.savefig(
+            os.path.join(OUTPUT_DIR, f"transformed_faces_{alpha_value}.png"), dpi=120
+        )
         plt.close()
 
     # ── Autoencoder ───────────────────────────────────────────────────
@@ -90,15 +100,85 @@ class Visualizer:
 
             # reconstruction
             axes[1, col].imshow(
-                np.clip(X_reconstructed[idx], 0, 255).reshape(IMAGE_HEIGHT, IMAGE_WIDTH),
+                np.clip(X_reconstructed[idx], 0, 255).reshape(
+                    IMAGE_HEIGHT, IMAGE_WIDTH
+                ),
                 cmap="gray",
             )
             axes[1, col].axis("off")
 
-        axes[0, 0].set_ylabel("Original",      fontsize=9)
+        axes[0, 0].set_ylabel("Original", fontsize=9)
         axes[1, 0].set_ylabel("Reconstructed", fontsize=9)
         fig.suptitle("Autoencoder — original vs reconstruction")
         plt.tight_layout()
         plt.savefig(os.path.join(OUTPUT_DIR, "ae_reconstructions.png"), dpi=120)
         plt.close()
         print("Saved ae_reconstructions.png")
+
+    # ── K-Means ─────────────────────────────────────────────────────
+
+    @staticmethod
+    def plot_kmeans_accuracy_vs_k(
+        kmeans_results, alpha_values, k_values, save_filename="kmeans_acc_vs_k.png"
+    ):
+        """Plots Accuracy against K value, multiple lines for alpha."""
+        plt.figure(figsize=(8, 6))
+        for alpha in alpha_values:
+            accuracies = [
+                kmeans_results[(alpha, k)]["train_accuracy"] for k in k_values
+            ]
+            plt.plot(k_values, accuracies, marker="o", label=f"α={alpha}")
+
+        plt.title("K-Means Training Accuracy vs K")
+        plt.xlabel("Number of Clusters (K)")
+        plt.ylabel("Training Accuracy")
+        plt.xticks(k_values)
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        save_path = os.path.join(OUTPUT_DIR, save_filename)
+        plt.savefig(save_path)
+        plt.close()
+        print(f"      Saved: {save_filename}")
+
+    @staticmethod
+    def plot_kmeans_accuracy_vs_alpha(
+        kmeans_results, alpha_values, k_values, save_filename="kmeans_acc_vs_alpha.png"
+    ):
+        """Plots Accuracy against Alpha value, multiple lines for K."""
+        plt.figure(figsize=(8, 6))
+        for k in k_values:
+            accuracies = [
+                kmeans_results[(alpha, k)]["train_accuracy"] for alpha in alpha_values
+            ]
+            plt.plot(alpha_values, accuracies, marker="s", label=f"K={k}")
+
+        plt.title("K-Means Training Accuracy vs α")
+        plt.xlabel("Alpha (Variance Retained)")
+        plt.ylabel("Training Accuracy")
+        plt.xticks(alpha_values)
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        save_path = os.path.join(OUTPUT_DIR, save_filename)
+        plt.savefig(save_path)
+        plt.close()
+        print(f"      Saved: {save_filename}")
+
+    @staticmethod
+    def plot_confusion_matrix(
+        cm, title="Confusion Matrix", save_filename="confusion_matrix.png"
+    ):
+        """Plots and saves the confusion matrix."""
+        import seaborn as sns
+
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(cm, annot=False, cmap="Blues", cbar=True)
+        plt.title(title)
+        plt.ylabel("True Label")
+        plt.xlabel("Predicted Label")
+        plt.tight_layout()
+        save_path = os.path.join(OUTPUT_DIR, save_filename)
+        plt.savefig(save_path)
+        plt.close()
+        print(f"      Saved: {save_filename}")
