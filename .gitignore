@@ -2,7 +2,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 .idea/
-face_recognition/outputs/
 face_recognition/checkpoints/
 face_recognition/att_faces/*
 !face_recognition/att_faces/README

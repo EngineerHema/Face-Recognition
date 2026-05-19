@@ -182,3 +182,104 @@ class Visualizer:
         plt.savefig(save_path)
         plt.close()
         print(f"      Saved: {save_filename}")
+
+    # ── GMM ──────────────────────────────────────────────────────
+
+    @staticmethod
+    def plot_gmm_accuracy_vs_k(
+        gmm_results, alpha_values, k_values, save_filename="gmm_acc_vs_k.png"
+    ):
+        """Plots Accuracy against K value for GMM, multiple lines for alpha."""
+        plt.figure(figsize=(8, 6))
+        for alpha in alpha_values:
+            accuracies = [
+                gmm_results.get((alpha, k), {}).get("train_accuracy", 0) for k in k_values
+            ]
+            plt.plot(k_values, accuracies, marker="o", label=f"α={alpha}")
+
+        plt.title("GMM Training Accuracy vs K")
+        plt.xlabel("Number of Clusters (K)")
+        plt.ylabel("Training Accuracy")
+        plt.xticks(k_values)
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        save_path = os.path.join(OUTPUT_DIR, save_filename)
+        plt.savefig(save_path)
+        plt.close()
+        print(f"      Saved: {save_filename}")
+
+    @staticmethod
+    def plot_gmm_accuracy_vs_alpha(
+        gmm_results, alpha_values, k_values, save_filename="gmm_acc_vs_alpha.png"
+    ):
+        """Plots Accuracy against Alpha value for GMM, multiple lines for K."""
+        plt.figure(figsize=(8, 6))
+        for k in k_values:
+            accuracies = [
+                gmm_results.get((alpha, k), {}).get("train_accuracy", 0) for alpha in alpha_values
+            ]
+            plt.plot(alpha_values, accuracies, marker="s", label=f"K={k}")
+
+        plt.title("GMM Training Accuracy vs α")
+        plt.xlabel("Alpha (Variance Retained)")
+        plt.ylabel("Training Accuracy")
+        plt.xticks(alpha_values)
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        save_path = os.path.join(OUTPUT_DIR, save_filename)
+        plt.savefig(save_path)
+        plt.close()
+        print(f"      Saved: {save_filename}")
+
+    # ── Comparison ───────────────────────────────────────────────
+
+    @staticmethod
+    def plot_kmeans_vs_gmm_comparison(
+        kmeans_results, gmm_results, alpha_values, k_values, save_filename="comparison_kmeans_vs_gmm.png"
+    ):
+        """Plots side-by-side comparison of K-Means and GMM accuracy."""
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+        
+        # Plot 1: Accuracy vs K
+        for alpha in alpha_values:
+            kmeans_accs = [
+                kmeans_results.get((alpha, k), {}).get("train_accuracy", 0) for k in k_values
+            ]
+            gmm_accs = [
+                gmm_results.get((alpha, k), {}).get("train_accuracy", 0) for k in k_values
+            ]
+            ax1.plot(k_values, kmeans_accs, marker="o", linestyle="-", label=f"K-Means (α={alpha})")
+            ax1.plot(k_values, gmm_accs, marker="s", linestyle="--", label=f"GMM (α={alpha})")
+        
+        ax1.set_title("Training Accuracy vs K (K-Means vs GMM)")
+        ax1.set_xlabel("Number of Clusters (K)")
+        ax1.set_ylabel("Training Accuracy")
+        ax1.set_xticks(k_values)
+        ax1.legend(fontsize=8)
+        ax1.grid(True)
+        
+        # Plot 2: Accuracy vs Alpha
+        for k in k_values:
+            kmeans_accs = [
+                kmeans_results.get((alpha, k), {}).get("train_accuracy", 0) for alpha in alpha_values
+            ]
+            gmm_accs = [
+                gmm_results.get((alpha, k), {}).get("train_accuracy", 0) for alpha in alpha_values
+            ]
+            ax2.plot(alpha_values, kmeans_accs, marker="o", linestyle="-", label=f"K-Means (K={k})")
+            ax2.plot(alpha_values, gmm_accs, marker="s", linestyle="--", label=f"GMM (K={k})")
+        
+        ax2.set_title("Training Accuracy vs α (K-Means vs GMM)")
+        ax2.set_xlabel("Alpha (Variance Retained)")
+        ax2.set_ylabel("Training Accuracy")
+        ax2.set_xticks(alpha_values)
+        ax2.legend(fontsize=8)
+        ax2.grid(True)
+        
+        plt.tight_layout()
+        save_path = os.path.join(OUTPUT_DIR, save_filename)
+        plt.savefig(save_path, dpi=120)
+        plt.close()
+        print(f"      Saved: {save_filename}")
